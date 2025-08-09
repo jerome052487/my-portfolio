@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+html, body {
+  @apply transition-colors duration-300;
+}
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 4rem; /* Adjust based on your navbar height */
+}
+/* Neon purple glow effect */
+.glow-purple {
+  box-shadow: 0 0 10px #a855f7, 0 0 20px #a855f7, 0 0 30px #a855f7;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.glow-purple:hover {
+  box-shadow: 0 0 15px #a855f7, 0 0 25px #a855f7, 0 0 40px #a855f7;
+}
+/* Add this at the bottom of your App.css or global stylesheet */
+.glow-green-hover:hover {
+  box-shadow: 0 0 15px #39ff14, 0 0 25px #39ff14, 0 0 35px #39ff14;
+}
+.neon-green-glow {
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.neon-green-glow:hover {
+  box-shadow: 0 0 12px #39ff14, 0 0 24px #39ff14, 0 0 36px #39ff14;
+}
+@layer utilities {
+  .glow {
+    box-shadow: 0 0 10px 4px rgba(34, 255, 0, 0.6),
+                0 0 20px 6px rgba(34, 255, 0, 0.4),
+                0 0 30px 8px rgba(34, 255, 0, 0.2);
+  }
+}
