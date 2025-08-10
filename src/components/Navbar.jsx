@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link as ScrollLink, Events, scroller } from 'react-scroll';
+import { Link as ScrollLink, Events } from 'react-scroll';
 
 const sections = ['home', 'about', 'projects', 'skills', 'contact'];
 
@@ -7,8 +7,8 @@ const Navbar = () => {
   const [active, setActive] = useState('home');
 
   useEffect(() => {
-    Events.scrollEvent.register('begin', function () {});
-    Events.scrollEvent.register('end', function () {});
+    Events.scrollEvent.register('begin', () => {});
+    Events.scrollEvent.register('end', () => {});
     return () => {
       Events.scrollEvent.remove('begin');
       Events.scrollEvent.remove('end');
@@ -41,10 +41,11 @@ const Navbar = () => {
               to={section}
               spy={true}
               smooth={true}
-              offset={-70}
+              offset={-70} // adjust for navbar height
               duration={500}
-              className={`cursor-pointer capitalize font-medium ${
-                active === section ? 'text-blue-500' : ''
+              onClick={() => setActive(section)}
+              className={`cursor-pointer capitalize font-medium transition-colors duration-300 ${
+                active === section ? 'text-blue-500' : 'hover:text-blue-400'
               }`}
             >
               {section}

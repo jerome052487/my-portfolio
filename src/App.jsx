@@ -9,7 +9,7 @@ import Skills from './components/Skills';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ThemeToggle from './components/ThemeToggle';
-import Navbar from './components/Navbar'; 
+import Navbar from './components/Navbar';
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
@@ -21,7 +21,7 @@ function App() {
     setDarkMode(prev => !prev);
   };
 
-  // AOS initialization
+  // Initialize AOS
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -29,7 +29,7 @@ function App() {
     });
   }, []);
 
-  // Dark mode handling
+  // Dark mode toggle
   useEffect(() => {
     const root = document.documentElement;
     if (darkMode) {

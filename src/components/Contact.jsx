@@ -6,7 +6,7 @@ const Contact = () => {
       <Navbar />
       <section
         id="contact"
-        className="min-h-screen flex items-center justify-center px-4 py-10"
+        className="min-h-screen flex items-center justify-center px-4 py-10 bg-gray-100 dark:bg-gray-900"
       >
         <div
           className="w-full max-w-2xl bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-8"
@@ -20,6 +20,7 @@ const Contact = () => {
             Get in Touch
           </h2>
           <form className="space-y-6">
+            {/* Name */}
             <div data-aos="fade-up" data-aos-delay="200">
               <label
                 htmlFor="name"
@@ -32,9 +33,11 @@ const Contact = () => {
                 id="name"
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Your name"
+                required
               />
             </div>
 
+            {/* Email */}
             <div data-aos="fade-up" data-aos-delay="300">
               <label
                 htmlFor="email"
@@ -47,9 +50,11 @@ const Contact = () => {
                 id="email"
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Your email"
+                required
               />
             </div>
 
+            {/* Message */}
             <div data-aos="fade-up" data-aos-delay="400">
               <label
                 htmlFor="message"
@@ -62,14 +67,19 @@ const Contact = () => {
                 rows="5"
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Your message"
+                required
               />
             </div>
 
+            {/* Submit Button with Neon Glow */}
             <button
               type="submit"
               data-aos="zoom-in"
               data-aos-delay="500"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300"
+              className="w-full bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition duration-300 transform hover:scale-105"
+              style={{
+                boxShadow: "0 0 10px #3b82f6, 0 0 20px #3b82f6, 0 0 40px #3b82f6",
+              }}
             >
               Send Message
             </button>
