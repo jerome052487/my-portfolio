@@ -5,45 +5,67 @@ import { Download, ArrowRight } from 'lucide-react';
 import { FaHtml5, FaCss3Alt, FaJsSquare, FaReact, FaUserAlt, FaCode, FaFolderOpen } from 'react-icons/fa';
 import { SiTailwindcss } from 'react-icons/si';
 
-// TypingEffect component for looping typing & deleting
-function TypingEffect({ texts, typingSpeed = 150, deletingSpeed = 100, pause = 1000 }) {
+// Hook to detect mobile/small screen
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth < breakpoint);
+    }
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [breakpoint]);
+
+  return isMobile;
+}
+
+// Typing effect that deletes only non-space characters, preserving trailing spaces
+function TypingEffectNoDeleteSpace({ texts, typingSpeed = 150, pause = 1000 }) {
   const [textIndex, setTextIndex] = useState(0);
   const [displayText, setDisplayText] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isTyping, setIsTyping] = useState(true);
 
   useEffect(() => {
     let timeout;
-
     const currentText = texts[textIndex];
 
-    if (!isDeleting && displayText.length < currentText.length) {
-      // Typing
+    if (isTyping && displayText.length < currentText.length) {
       timeout = setTimeout(() => {
         setDisplayText(currentText.slice(0, displayText.length + 1));
       }, typingSpeed);
-    } else if (isDeleting && displayText.length > 0) {
-      // Deleting
-      timeout = setTimeout(() => {
-        setDisplayText(currentText.slice(0, displayText.length - 1));
-      }, deletingSpeed);
-    } else if (!isDeleting && displayText.length === currentText.length) {
-      // Pause before deleting
-      timeout = setTimeout(() => setIsDeleting(true), pause);
-    } else if (isDeleting && displayText.length === 0) {
-      // Move to next text and start typing
-      timeout = setTimeout(() => {
-        setIsDeleting(false);
-        setTextIndex((prev) => (prev + 1) % texts.length);
-      }, pause / 2);
+    } else if (isTyping && displayText.length === currentText.length) {
+      timeout = setTimeout(() => setIsTyping(false), pause);
+    } else if (!isTyping) {
+      // Delete only non-space characters from the end, keep trailing spaces
+      let i = displayText.length - 1;
+      while (i >= 0 && displayText[i] === ' ') {
+        i--;
+      }
+
+      if (i < 0) {
+        timeout = setTimeout(() => {
+          setTextIndex((prev) => (prev + 1) % texts.length);
+          setDisplayText('');
+          setIsTyping(true);
+        }, pause);
+      } else {
+        timeout = setTimeout(() => {
+          setDisplayText(displayText.slice(0, i));
+        }, typingSpeed / 2);
+      }
     }
 
     return () => clearTimeout(timeout);
-  }, [displayText, isDeleting, textIndex, texts, typingSpeed, deletingSpeed, pause]);
+  }, [displayText, isTyping, textIndex, texts, typingSpeed, pause]);
 
-  return <span>{displayText}</span>;
+  return <span style={{ whiteSpace: 'pre' }}>{displayText}</span>;
 }
 
 export default function Hero() {
+  const isMobile = useIsMobile();
+
   const [tilt, setTilt] = useState({
     x: 0,
     y: 0,
@@ -79,20 +101,26 @@ export default function Hero() {
         id="home"
         className="relative min-h-screen flex flex-col justify-center items-center px-6 overflow-hidden"
       >
-        {/* Optional Video Background */}
-        <video
-          className="absolute inset-0 w-full h-full object-cover opacity-20 z-0"
-          autoPlay
-          loop
-          muted
-          playsInline
-        >
-          <source src="/abstract-bg.mp4" type="video/mp4" />
-        </video>
+        {/* Background Video or gradient fallback */}
+        {!isMobile ? (
+          <video
+            className="absolute inset-0 w-full h-full object-cover opacity-20 z-0"
+            autoPlay
+            loop
+            muted
+            playsInline
+          >
+            <source src="/abstract-bg.mp4" type="video/mp4" />
+          </video>
+        ) : (
+          <div
+            className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 opacity-40 z-0"
+          />
+        )}
 
         {/* Floating Particles */}
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-          {Array.from({ length: 15 }).map((_, i) => (
+          {(isMobile ? Array.from({ length: 5 }) : Array.from({ length: 15 })).map((_, i) => (
             <span
               key={i}
               className="absolute rounded-full bg-purple-400 opacity-60 blur-sm"
@@ -119,22 +147,18 @@ export default function Hero() {
               Hi, I'm <span className="text-blue-500">Jerome</span>
             </h1>
             <h2 className="text-xl md:text-2xl font-semibold mb-6 text-purple-500">
-              <TypingEffect
+              <TypingEffectNoDeleteSpace
                 texts={[
-                  'Creative Frontend Developer',
-                  'React Enthusiast',
-                  'UI/UX Lover',
+                  'Creative Frontend Developer | React Enthusiast | UI/UX Lover    ', // trailing spaces
                 ]}
-                typingSpeed={120}
-                deletingSpeed={80}
-                pause={1200}
+                typingSpeed={100}
+                pause={1500}
               />
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
               Building fast, elegant, and responsive websites using modern tools like React, Tailwind CSS, and more.
             </p>
-
-            {/* Buttons with stronger neon glow hover */}
+            {/* Buttons */}
             <div className="flex flex-wrap gap-4 justify-center md:justify-start">
               <a
                 href="#projects"
@@ -178,8 +202,9 @@ export default function Hero() {
               transform: `rotateX(${-tilt.x}deg) rotateY(${tilt.y}deg)`,
               backgroundImage: `radial-gradient(circle at ${tilt.glowX}% ${tilt.glowY}%, rgba(168, 85, 247, 0.35), transparent 60%)`,
             }}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={resetTilt}
+            {...(!isMobile
+              ? { onMouseMove: handleMouseMove, onMouseLeave: resetTilt }
+              : {})}
           >
             <div className="relative w-64 h-64 mx-auto mb-6" style={{ transform: `translateZ(50px)` }}>
               <div
@@ -223,7 +248,7 @@ export default function Hero() {
           <SiTailwindcss className="hover:text-teal-400 transition-colors duration-300" />
         </div>
 
-        {/* Mini-Cards Section with stronger glowing neon hover */}
+        {/* Mini-Cards Section */}
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {/* About */}
           <a

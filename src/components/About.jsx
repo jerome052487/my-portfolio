@@ -1,31 +1,5 @@
-import { useState, useEffect } from 'react';
 import Navbar from './Navbar';
 import { FaHeart, FaLaptopCode, FaBullseye } from 'react-icons/fa';
-
-function TypingText({ text, speed = 30 }) {
-  const [displayedText, setDisplayedText] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (!isDeleting) {
-        setDisplayedText(text.substring(0, displayedText.length + 1));
-        if (displayedText.length + 1 === text.length) {
-          setTimeout(() => setIsDeleting(true), 800);
-        }
-      } else {
-        setDisplayedText(text.substring(0, displayedText.length - 1));
-        if (displayedText.length === 0) {
-          setIsDeleting(false);
-        }
-      }
-    }, isDeleting ? speed / 2 : speed);
-
-    return () => clearTimeout(timeout);
-  }, [displayedText, isDeleting, text, speed]);
-
-  return <span>{displayedText}</span>;
-}
 
 export default function About() {
   return (
@@ -70,10 +44,7 @@ export default function About() {
                 Passion & Skills
               </h3>
               <p className="text-lg leading-relaxed">
-                <TypingText 
-                  text="I'm a self-taught web developer passionate about building intuitive, beautiful, and high-performing websites and applications. I love turning ideas into real-world solutions using modern technologies like React, Tailwind CSS, and JavaScript." 
-                  speed={30} 
-                />
+                I'm a self-taught web developer passionate about building intuitive, beautiful, and high-performing websites and applications. I love turning ideas into real-world solutions using modern technologies like React, Tailwind CSS, and JavaScript.
               </p>
             </div>
 
@@ -96,10 +67,7 @@ export default function About() {
                 My Mission
               </h3>
               <p className="text-lg leading-relaxed">
-                <TypingText 
-                  text="My goal is to help people and businesses create an online presence that stands out, while continuously improving my skills through real-world projects and collaborations. I strive to deliver quality work that brings value and growth to my clients and community." 
-                  speed={30} 
-                />
+                My goal is to help people and businesses create an online presence that stands out, while continuously improving my skills through real-world projects and collaborations. I strive to deliver quality work that brings value and growth to my clients and community.
               </p>
             </div>
           </div>
