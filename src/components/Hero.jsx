@@ -21,44 +21,34 @@ function useIsMobile(breakpoint = 768) {
   return isMobile;
 }
 
-// Typing effect that deletes only non-space characters, preserving trailing spaces
-function TypingEffectNoDeleteSpace({ texts, typingSpeed = 150, pause = 1000 }) {
-  const [textIndex, setTextIndex] = useState(0);
+function TypingEffect({ text, typingSpeed = 120, deletingSpeed = 80, pause = 1200 }) {
   const [displayText, setDisplayText] = useState('');
-  const [isTyping, setIsTyping] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     let timeout;
-    const currentText = texts[textIndex];
 
-    if (isTyping && displayText.length < currentText.length) {
+    if (!isDeleting && displayText.length < text.length) {
       timeout = setTimeout(() => {
-        setDisplayText(currentText.slice(0, displayText.length + 1));
+        setDisplayText(text.slice(0, displayText.length + 1));
       }, typingSpeed);
-    } else if (isTyping && displayText.length === currentText.length) {
-      timeout = setTimeout(() => setIsTyping(false), pause);
-    } else if (!isTyping) {
-      // Delete only non-space characters from the end, keep trailing spaces
-      let i = displayText.length - 1;
-      while (i >= 0 && displayText[i] === ' ') {
-        i--;
-      }
+    } else if (isDeleting) {
+      // Keep trailing space so width stays consistent
+      const minLength = text.endsWith(' ') ? text.length - 1 : 0;
 
-      if (i < 0) {
+      if (displayText.length > minLength) {
         timeout = setTimeout(() => {
-          setTextIndex((prev) => (prev + 1) % texts.length);
-          setDisplayText('');
-          setIsTyping(true);
-        }, pause);
+          setDisplayText(text.slice(0, displayText.length - 1));
+        }, deletingSpeed);
       } else {
-        timeout = setTimeout(() => {
-          setDisplayText(displayText.slice(0, i));
-        }, typingSpeed / 2);
+        timeout = setTimeout(() => setIsDeleting(false), pause);
       }
+    } else if (displayText.length === text.length) {
+      timeout = setTimeout(() => setIsDeleting(true), pause);
     }
 
     return () => clearTimeout(timeout);
-  }, [displayText, isTyping, textIndex, texts, typingSpeed, pause]);
+  }, [displayText, isDeleting, text, typingSpeed, deletingSpeed, pause]);
 
   return <span style={{ whiteSpace: 'pre' }}>{displayText}</span>;
 }
@@ -94,6 +84,12 @@ export default function Hero() {
     setTilt({ x: 0, y: 0, glowX: 50, glowY: 50 });
   };
 
+  const typingLines = [
+    'Creative Frontend Developer ',
+    'React Enthusiast ',
+    'UI/UX Lover ',
+  ];
+
   return (
     <>
       <Navbar />
@@ -101,7 +97,6 @@ export default function Hero() {
         id="home"
         className="relative min-h-screen flex flex-col justify-center items-center px-6 overflow-hidden"
       >
-        {/* Background Video or gradient fallback */}
         {!isMobile ? (
           <video
             className="absolute inset-0 w-full h-full object-cover opacity-20 z-0"
@@ -118,7 +113,6 @@ export default function Hero() {
           />
         )}
 
-        {/* Floating Particles */}
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
           {(isMobile ? Array.from({ length: 5 }) : Array.from({ length: 15 })).map((_, i) => (
             <span
@@ -136,7 +130,6 @@ export default function Hero() {
           ))}
         </div>
 
-        {/* Background Gradient Animation */}
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 animate-gradient opacity-20 z-0"></div>
 
         {/* Main content */}
@@ -146,18 +139,23 @@ export default function Hero() {
             <h1 className="text-4xl md:text-6xl font-bold mb-4">
               Hi, I'm <span className="text-blue-500">Jerome</span>
             </h1>
-            <h2 className="text-xl md:text-2xl font-semibold mb-6 text-purple-500">
-              <TypingEffectNoDeleteSpace
-                texts={[
-                  'Creative Frontend Developer | React Enthusiast | UI/UX Lover    ', // trailing spaces
-                ]}
-                typingSpeed={100}
-                pause={1500}
-              />
+            <h2 className="text-xl md:text-2xl font-semibold mb-6 text-purple-500" style={{ lineHeight: '1.3' }}>
+              {typingLines.map((line, index) => (
+                <div key={index}>
+                  <TypingEffect
+                    text={line}
+                    typingSpeed={120}
+                    deletingSpeed={80}
+                    pause={1200}
+                  />
+                </div>
+              ))}
             </h2>
+
             <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
               Building fast, elegant, and responsive websites using modern tools like React, Tailwind CSS, and more.
             </p>
+
             {/* Buttons */}
             <div className="flex flex-wrap gap-4 justify-center md:justify-start">
               <a
