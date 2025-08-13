@@ -1,6 +1,8 @@
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 import Header from './components/Header';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -11,35 +13,10 @@ import Footer from './components/Footer';
 import ThemeToggle from './components/ThemeToggle';
 import Navbar from './components/Navbar';
 
-function App() {
-  const [darkMode, setDarkMode] = useState(() => {
-    const saved = localStorage.getItem('darkMode');
-    return saved === 'true';
-  });
+import WeatherPage from './components/WeatherPage';  // Import your WeatherPage component
 
-  const toggleDarkMode = () => {
-    setDarkMode(prev => !prev);
-  };
-
-  // Initialize AOS
-  useEffect(() => {
-    AOS.init({
-      duration: 1000,
-      once: true,
-    });
-  }, []);
-
-  // Dark mode toggle
-  useEffect(() => {
-    const root = document.documentElement;
-    if (darkMode) {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-    localStorage.setItem('darkMode', darkMode);
-  }, [darkMode]);
-
+// Home component grouping main sections
+function Home({ darkMode, toggleDarkMode }) {
   return (
     <div className="bg-white text-black dark:bg-gray-900 dark:text-white min-h-screen transition-colors duration-300">
       <ThemeToggle darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
@@ -52,6 +29,45 @@ function App() {
       <Contact />
       <Footer />
     </div>
+  );
+}
+
+function App() {
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem('darkMode');
+    return saved === 'true';
+  });
+
+  const toggleDarkMode = () => {
+    setDarkMode(prev => !prev);
+  };
+
+  // Initialize AOS animation library
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+  }, []);
+
+  // Manage dark mode class on root element and save preference
+  useEffect(() => {
+    const root = document.documentElement;
+    if (darkMode) {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    localStorage.setItem('darkMode', darkMode);
+  }, [darkMode]);
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home darkMode={darkMode} toggleDarkMode={toggleDarkMode} />} />
+        <Route path="/weather" element={<WeatherPage />} />
+      </Routes>
+    </Router>
   );
 }
 

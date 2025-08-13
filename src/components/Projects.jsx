@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import project1 from '../assets/project1.png';
 import project2 from '../assets/project2.png';
 import project3 from '../assets/project3.png';
@@ -13,7 +14,7 @@ const Projects = () => {
       title: 'Weather App',
       description: 'A sleek weather forecasting app using OpenWeatherMap API.',
       images: [project1, project1],
-      demoLink: '#',
+      demoLink: '/weather',  // updated to route
       tech: ['React', 'Tailwind CSS', 'OpenWeatherMap API'],
       features: ['Search by city name', 'Responsive design', 'Dynamic weather icons'],
       github: '#',
@@ -84,8 +85,8 @@ const Projects = () => {
                   {project.description}
                 </p>
                 <div className="flex gap-3">
-                  <a
-                    href={project.demoLink}
+                  <Link
+                    to={project.demoLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block px-6 py-2 mt-auto bg-blue-600 text-white rounded-full shadow-lg transition-all duration-300 hover:bg-blue-700 hover:scale-105 neon-blue-glow"
@@ -93,7 +94,7 @@ const Projects = () => {
                     data-aos-delay={index * 150}
                   >
                     Live Demo
-                  </a>
+                  </Link>
                   <button
                     onClick={() => {
                       setSelectedProject(project);
@@ -166,23 +167,13 @@ const Projects = () => {
 
             <div className="flex gap-3">
               <a
-                href={selectedProject.demoLink}
+                href={selectedProject.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 neon-blue-glow"
+                className="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-white rounded-full shadow-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition-all duration-300 neon-blue-glow"
               >
-                Live Demo
+                GitHub
               </a>
-              {selectedProject.github && (
-                <a
-                  href={selectedProject.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-white rounded-full shadow-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition-all duration-300 neon-blue-glow"
-                >
-                  GitHub
-                </a>
-              )}
             </div>
           </div>
         </div>
