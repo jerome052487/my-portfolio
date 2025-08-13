@@ -1,12 +1,9 @@
 import { Sun, Moon } from 'lucide-react';
-export default function ThemeToggle({ darkMode, setDarkMode }) {
-  const handleToggle = () => {
-    setDarkMode(prev => !prev);
-  };
 
+export default function ThemeToggle({ darkMode, toggleDarkMode }) {
   return (
     <button
-      onClick={handleToggle}
+      onClick={toggleDarkMode}
       className="fixed top-4 right-4 z-50 p-2 rounded-full 
                  bg-white dark:bg-gray-700 
                  text-gray-800 dark:text-white 

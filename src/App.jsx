@@ -14,7 +14,7 @@ import ThemeToggle from './components/ThemeToggle';
 import Navbar from './components/Navbar';
 
 import WeatherPage from './components/WeatherPage';  
-import LandingPage from './components/LandingPage';  // Import LandingPage
+import LandingPage from './components/LandingPage';  
 
 function Home({ darkMode, toggleDarkMode }) {
   return (
@@ -34,13 +34,32 @@ function Home({ darkMode, toggleDarkMode }) {
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
-    const saved = localStorage.getItem('darkMode');
-    return saved === 'true';
+    // On first load, check localStorage or system preference
+    if (localStorage.theme === 'dark') return true;
+    if (localStorage.theme === 'light') return false;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
   const toggleDarkMode = () => {
-    setDarkMode(prev => !prev);
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    if (newMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
   };
+
+  useEffect(() => {
+    // Apply the saved theme immediately
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   useEffect(() => {
     AOS.init({
@@ -49,22 +68,12 @@ function App() {
     });
   }, []);
 
-  useEffect(() => {
-    const root = document.documentElement;
-    if (darkMode) {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-    localStorage.setItem('darkMode', darkMode);
-  }, [darkMode]);
-
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home darkMode={darkMode} toggleDarkMode={toggleDarkMode} />} />
         <Route path="/weather" element={<WeatherPage />} />
-        <Route path="/landing" element={<LandingPage />} />  {/* Add this */}
+        <Route path="/landing" element={<LandingPage />} />
       </Routes>
     </Router>
   );

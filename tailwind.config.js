@@ -2,6 +2,7 @@
 import plugin from 'tailwindcss/plugin'
 
 export default {
+  darkMode: 'class', // ✅ Make sure dark mode works via toggle
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -9,7 +10,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        'purple-glow': '#a855f7', // Tailwind's purple-500 by default
+        'purple-glow': '#a855f7',
       },
       keyframes: {
         'fade-in': {
