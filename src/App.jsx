@@ -16,10 +16,10 @@ import Navbar from './components/Navbar';
 import WeatherPage from './components/WeatherPage';
 import LandingPage from './components/LandingPage';
 
-function Home({ darkMode, toggleDarkMode }) {
+function Home({ theme, setTheme }) {
   return (
     <div className="bg-white text-black dark:bg-gray-900 dark:text-white min-h-screen transition-colors duration-300">
-      <ThemeToggle darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+      <ThemeToggle theme={theme} setTheme={setTheme} />
       <Navbar />
       <Header />
       <Hero />
@@ -33,35 +33,19 @@ function Home({ darkMode, toggleDarkMode }) {
 }
 
 function App() {
-  const [darkMode, setDarkMode] = useState(() => {
-    // Load saved preference first
-    if (localStorage.theme === 'dark') return true;
-    if (localStorage.theme === 'light') return false;
-    // Fallback: system preference
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const [theme, setTheme] = useState(() => {
+    // Force dark mode as default unless saved in localStorage
+    return localStorage.getItem('theme') || 'dark';
   });
 
-  const toggleDarkMode = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-
-    if (newMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  };
-
   useEffect(() => {
-    // Apply mode immediately on load
-    if (darkMode) {
+    if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-  }, [darkMode]);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     AOS.init({
@@ -73,7 +57,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home darkMode={darkMode} toggleDarkMode={toggleDarkMode} />} />
+        <Route path="/" element={<Home theme={theme} setTheme={setTheme} />} />
         <Route path="/weather" element={<WeatherPage />} />
         <Route path="/landing" element={<LandingPage />} />
       </Routes>
