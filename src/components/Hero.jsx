@@ -21,36 +21,82 @@ function useIsMobile(breakpoint = 768) {
   return isMobile;
 }
 
-function TypingEffect({ text, typingSpeed = 120, deletingSpeed = 80, pause = 1200 }) {
-  const [displayText, setDisplayText] = useState('');
+// Multi-line typing effect component
+function MultiLineTypingEffect({
+  lines,
+  typingSpeed = 120,
+  deletingSpeed = 80,
+  pause = 1200,
+}) {
+  const [currentLineIndex, setCurrentLineIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [displayedLines, setDisplayedLines] = useState(lines.map(() => ''));
   const [isDeleting, setIsDeleting] = useState(false);
+  const [pauseTimeout, setPauseTimeout] = useState(false);
 
   useEffect(() => {
+    if (pauseTimeout) return;
+
     let timeout;
 
-    if (!isDeleting && displayText.length < text.length) {
-      timeout = setTimeout(() => {
-        setDisplayText(text.slice(0, displayText.length + 1));
-      }, typingSpeed);
-    } else if (isDeleting) {
-      // Keep trailing space so width stays consistent
-      const minLength = text.endsWith(' ') ? text.length - 1 : 0;
-
-      if (displayText.length > minLength) {
+    if (!isDeleting) {
+      // Typing phase
+      if (charIndex < lines[currentLineIndex].length) {
         timeout = setTimeout(() => {
-          setDisplayText(text.slice(0, displayText.length - 1));
+          const newLines = [...displayedLines];
+          newLines[currentLineIndex] = lines[currentLineIndex].slice(0, charIndex + 1);
+          setDisplayedLines(newLines);
+          setCharIndex(charIndex + 1);
+        }, typingSpeed);
+      } else {
+        // Line fully typed, pause then next line or start deleting
+        timeout = setTimeout(() => {
+          if (currentLineIndex < lines.length - 1) {
+            setCurrentLineIndex(currentLineIndex + 1);
+            setCharIndex(0);
+          } else {
+            // All lines typed, start deleting
+            setIsDeleting(true);
+            setPauseTimeout(true);
+            setTimeout(() => setPauseTimeout(false), pause);
+          }
+        }, pause);
+      }
+    } else {
+      // Deleting phase
+      if (charIndex > 0) {
+        timeout = setTimeout(() => {
+          const newLines = [...displayedLines];
+          newLines[currentLineIndex] = lines[currentLineIndex].slice(0, charIndex - 1);
+          setDisplayedLines(newLines);
+          setCharIndex(charIndex - 1);
         }, deletingSpeed);
       } else {
-        timeout = setTimeout(() => setIsDeleting(false), pause);
+        // Line fully deleted, move to previous line or start typing again
+        timeout = setTimeout(() => {
+          if (currentLineIndex > 0) {
+            setCurrentLineIndex(currentLineIndex - 1);
+            setCharIndex(lines[currentLineIndex - 1].length);
+          } else {
+            // All lines deleted, start typing again
+            setIsDeleting(false);
+            setCurrentLineIndex(0);
+            setCharIndex(0);
+          }
+        }, pause);
       }
-    } else if (displayText.length === text.length) {
-      timeout = setTimeout(() => setIsDeleting(true), pause);
     }
 
     return () => clearTimeout(timeout);
-  }, [displayText, isDeleting, text, typingSpeed, deletingSpeed, pause]);
+  }, [charIndex, currentLineIndex, isDeleting, displayedLines, lines, typingSpeed, deletingSpeed, pause, pauseTimeout]);
 
-  return <span style={{ whiteSpace: 'pre' }}>{displayText}</span>;
+  return (
+    <div style={{ whiteSpace: 'pre-line' }}>
+      {displayedLines.map((line, i) => (
+        <div key={i}>{line || '\u00A0' /* non-breaking space to preserve line height */}</div>
+      ))}
+    </div>
+  );
 }
 
 export default function Hero() {
@@ -139,17 +185,34 @@ export default function Hero() {
             <h1 className="text-4xl md:text-6xl font-bold mb-4">
               Hi, I'm <span className="text-blue-500">Jerome</span>
             </h1>
-            <h2 className="text-xl md:text-2xl font-semibold mb-6 text-purple-500" style={{ lineHeight: '1.3' }}>
-              {typingLines.map((line, index) => (
-                <div key={index}>
-                  <TypingEffect
-                    text={line}
-                    typingSpeed={120}
-                    deletingSpeed={80}
-                    pause={1200}
-                  />
-                </div>
-              ))}
+
+            {/* Typing lines with single vertical line */}
+            <h2
+              className="text-xl md:text-2xl font-semibold mb-6 text-purple-500 flex"
+              style={{ lineHeight: '1.3' }}
+            >
+              {/* Vertical line spanning all lines */}
+              <span
+                style={{
+                  fontWeight: '900',
+                  fontSize: '1.5rem',
+                  userSelect: 'none',
+                  color: 'purple',
+                  marginRight: '0.5rem',
+                  lineHeight: '1.3',
+                  alignSelf: 'flex-start',
+                }}
+              >
+                |
+              </span>
+
+              {/* Multi-line typing effect */}
+              <MultiLineTypingEffect
+                lines={typingLines}
+                typingSpeed={120}
+                deletingSpeed={80}
+                pause={1200}
+              />
             </h2>
 
             <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
