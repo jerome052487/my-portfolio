@@ -13,8 +13,8 @@ import Footer from './components/Footer';
 import ThemeToggle from './components/ThemeToggle';
 import Navbar from './components/Navbar';
 
-import WeatherPage from './components/WeatherPage';  
-import LandingPage from './components/LandingPage';  
+import WeatherPage from './components/WeatherPage';
+import LandingPage from './components/LandingPage';
 
 function Home({ darkMode, toggleDarkMode }) {
   return (
@@ -34,15 +34,17 @@ function Home({ darkMode, toggleDarkMode }) {
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
-    // On first load, check localStorage or system preference
+    // Load saved preference first
     if (localStorage.theme === 'dark') return true;
     if (localStorage.theme === 'light') return false;
+    // Fallback: system preference
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
   const toggleDarkMode = () => {
     const newMode = !darkMode;
     setDarkMode(newMode);
+
     if (newMode) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
@@ -53,7 +55,7 @@ function App() {
   };
 
   useEffect(() => {
-    // Apply the saved theme immediately
+    // Apply mode immediately on load
     if (darkMode) {
       document.documentElement.classList.add('dark');
     } else {
