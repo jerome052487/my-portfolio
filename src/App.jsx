@@ -13,9 +13,9 @@ import Footer from './components/Footer';
 import ThemeToggle from './components/ThemeToggle';
 import Navbar from './components/Navbar';
 
-import WeatherPage from './components/WeatherPage';  // Import your WeatherPage component
+import WeatherPage from './components/WeatherPage';  
+import LandingPage from './components/LandingPage';  // Import LandingPage
 
-// Home component grouping main sections
 function Home({ darkMode, toggleDarkMode }) {
   return (
     <div className="bg-white text-black dark:bg-gray-900 dark:text-white min-h-screen transition-colors duration-300">
@@ -42,7 +42,6 @@ function App() {
     setDarkMode(prev => !prev);
   };
 
-  // Initialize AOS animation library
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -50,7 +49,6 @@ function App() {
     });
   }, []);
 
-  // Manage dark mode class on root element and save preference
   useEffect(() => {
     const root = document.documentElement;
     if (darkMode) {
@@ -66,6 +64,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home darkMode={darkMode} toggleDarkMode={toggleDarkMode} />} />
         <Route path="/weather" element={<WeatherPage />} />
+        <Route path="/landing" element={<LandingPage />} />  {/* Add this */}
       </Routes>
     </Router>
   );

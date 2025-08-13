@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import project1 from '../assets/project1.png';
-import project2 from '../assets/project2.png';
+import project2 from '../assets/project2.jpg';
 import project3 from '../assets/project3.png';
 
 const Projects = () => {
@@ -21,10 +21,10 @@ const Projects = () => {
     },
     {
       id: 2,
-      title: 'Portfolio Website',
-      description: 'My personal responsive portfolio built with React and Tailwind CSS.',
+      title: 'Landing Page',
+      description: 'A clean and modern landing page designed to showcase products, services, or ideas with a strong call-to-action and responsive layout, built with React and Tailwind CSS.',
       images: [project2, project2],
-      demoLink: '#',
+      demoLink: '/landing',  // <-- Changed this to route to landing page
       tech: ['React', 'Tailwind CSS', 'AOS Animations'],
       features: ['Dark mode toggle', 'Smooth scrolling', 'Downloadable resume'],
       github: '#',
